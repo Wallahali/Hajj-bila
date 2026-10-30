@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>حج بلا عوائق — نموذج أولي للمنصة</title>
+  <meta name="description" content="منصة رقمية تربط الحاج ذا الإعاقة الحركية بمشرف حملته والمشرف العام، بلغة كل منهم.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+/* حج بلا عوائق — التصميم
+   الأخضر العميق: هوية المنصة والإجراءات الأساسية
+   الذهبي: يُستخدم فقط لـ«جسر اللغة» (ما كتبه الحاج بلغته)
+   الأحمر: العاجل والطوارئ فقط */
+
+:root {
+  color-scheme: light;
+  --bg: #EEF2EF;
+  --surface: #FFFFFF;
+  --surface-2: #F6F8F6;
+  --ink: #16302A;
+  --ink-2: #4D625B;
+  --line: #D3DDD8;
+  --green: #0E5B4B;
+  --green-ink: #FFFFFF;
+  --green-soft: #DBEBE4;
+  --gold: #A87A22;
+  --gold-soft: #F6EDDA;
+  --red: #B42318;
+  --red-soft: #FCE6E3;
+  --focus: #1A73E8;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 28px;
+
+  --fs-sm: 0.875rem;
+  --fs-base: 1.0625rem;
+  --fs-md: 1.25rem;
+  --fs-lg: 1.625rem;
+  --fs-xl: 2.25rem;
+
+  --font: 'Readex Pro', 'Noto Naskh Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0D1714;
+    --surface: #15221E;
+    --surface-2: #1B2B26;
+    --ink: #E5EEEA;
+    --ink-2: #A0B4AC;
+    --line: #2B3E38;
+    --green: #5BC2A5;
+    --green-ink: #072019;
+    --green-soft: #1C3A32;
+    --gold: #E2BA62;
+    --gold-soft: #2E2716;
+    --red: #FF8A7E;
+    --red-soft: #3A1E1B;
+    --focus: #8AB4F8;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+:lang(ur) { font-family: 'Noto Nastaliq Urdu', var(--font); line-height: 2.2; }
+h1, h2, h3, p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+.sr { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--ink-2); }
+.ic { inline-size: 1.15em; block-size: 1.15em; flex: none; }
+.ic-lg { inline-size: 1.6em; block-size: 1.6em; }
+.ic-xl { inline-size: 2.4rem; block-size: 2.4rem; }
+bdi { unicode-bidi: isolate; }
+
+.shell { max-inline-size: 1180px; margin-inline: auto; padding-inline: 20px; }
+#view { padding-block: 28px 40px; outline: none; }
+
+/* ---------- الشريط العلوي ---------- */
+.top { background: var(--green); color: var(--green-ink); }
+.top-inner {
+  max-inline-size: 1180px; margin-inline: auto; padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-weight: 600; font-size: var(--fs-md); }
+.brand svg { inline-size: 36px; block-size: 36px; }
+.roles { display: flex; gap: 4px; background: color-mix(in srgb, var(--green-ink) 14%, transparent); padding: 4px; border-radius: 999px; }
+.role {
+  border: 0; background: transparent; color: inherit; padding: 8px 18px; border-radius: 999px;
+  font-size: var(--fs-sm); font-weight: 500; display: inline-flex; align-items: center; gap: 8px; min-block-size: 40px; white-space: nowrap;
+}
+.role[aria-pressed="true"] { background: var(--green-ink); color: var(--green); }
+.dot {
+  min-inline-size: 22px; block-size: 22px; padding-inline: 6px; border-radius: 999px;
+  background: var(--red); color: #fff; font-size: 0.75rem; display: inline-grid; place-items: center;
+}
+@media (prefers-color-scheme: dark) { .dot { color: #2A0B08; } }
+
+/* ---------- شريط التجربة ---------- */
+.demo-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px;
+  padding: 10px 14px; margin-block-end: 22px;
+  border: 1px dashed var(--line); border-radius: var(--r-sm);
+  color: var(--ink-2); font-size: var(--fs-sm);
+}
+.demo-bar label { display: flex; align-items: center; gap: 8px; }
+select {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 6px 10px; min-block-size: 40px;
+}
+
+/* ---------- واجهة الحاج ---------- */
+#view[data-role="pilgrim"] { display: flex; flex-direction: column; align-items: center; }
+#view[data-role="pilgrim"] .demo-bar { align-self: stretch; }
+.phone {
+  inline-size: 100%; max-inline-size: 440px;
+  background: var(--surface); border-radius: var(--r-lg);
+  padding: 22px 18px 28px;
+  border: 1px solid var(--line);
+}
+.p-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.p-hello { font-size: var(--fs-md); font-weight: 600; }
+.p-camp { color: var(--ink-2); font-size: var(--fs-sm); }
+.lang-pick { display: flex; align-items: center; gap: 4px; color: var(--green); }
+.lang-pick select { min-block-size: 44px; font-size: var(--fs-sm); max-inline-size: 9.5rem; }
+
+.p-facts { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 16px 14px; }
+.fact {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 12px; font-size: var(--fs-sm); color: var(--ink-2);
+}
+.fact-loc select { border: 0; background: transparent; padding: 2px 4px; min-block-size: 36px; color: var(--ink); font-weight: 600; }
+
+.sos {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--r-md);
+  background: var(--red-soft); color: var(--red); text-decoration: none;
+  border: 2px solid var(--red);
+}
+.sos strong { display: block; font-size: var(--fs-md); }
+.sos small { display: block; font-size: var(--fs-sm); color: var(--ink); }
+
+.p-ask { font-size: var(--fs-lg); font-weight: 600; margin-block-start: 26px; line-height: 1.3; }
+.p-hint { color: var(--ink-2); font-size: var(--fs-sm); margin-block: 4px 16px; }
+.phone[lang="ur"] .p-ask { line-height: 2; }
+
+.req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.req-btn {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 14px;
+  min-block-size: 124px; padding: 14px; text-align: start;
+  background: var(--green-soft); color: var(--ink);
+  border: 2px solid transparent; border-radius: var(--r-md);
+  font-size: var(--fs-base); font-weight: 500; line-height: 1.35;
+}
+.req-btn .ic { color: var(--green); }
+.req-btn:hover { border-color: var(--green); }
+.req-btn:active { transform: scale(0.98); }
+.req-btn:last-child:nth-child(odd) { grid-column: 1 / -1; min-block-size: 96px; flex-direction: row; align-items: center; justify-content: flex-start; }
+.phone[lang="ur"] .req-btn { line-height: 1.9; }
+
+.p-sub { font-size: var(--fs-md); font-weight: 600; margin-block: 28px 10px; }
+.mine { display: grid; gap: 8px; }
+.mine-item {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+  padding: 12px; border-radius: var(--r-sm); border: 1px solid var(--line);
+}
+.mine-item > .ic { color: var(--ink-2); }
+.mine-type { font-weight: 500; }
+.mine-status { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--ink-2); }
+.status-dot { inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--ink-2); flex: none; }
+.st-new .status-dot { background: var(--red); animation: pulse 1.6s ease-in-out infinite; }
+.st-accepted .status-dot { background: var(--green); }
+.st-accepted .mine-status { color: var(--green); font-weight: 500; }
+.st-done { opacity: 0.72; }
+time { font-size: var(--fs-sm); color: var(--ink-2); white-space: nowrap; }
+.tag-urgent {
+  display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 1px 8px; border-radius: 999px;
+  background: var(--red); color: #fff; vertical-align: middle;
+}
+@media (prefers-color-scheme: dark) { .tag-urgent { color: #2A0B08; } }
+.empty { color: var(--ink-2); padding: 16px; border: 1px dashed var(--line); border-radius: var(--r-sm); }
+
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+/* ---------- نافذة الطلب ---------- */
+.sheet-back { position: fixed; inset: 0; background: rgb(8 20 16 / 0.45); z-index: 20; }
+.sheet {
+  position: fixed; inset-inline: 0; inset-block-end: 0; z-index: 21;
+  margin-inline: auto; inline-size: 100%; max-inline-size: 460px;
+  max-block-size: 92vh; overflow-y: auto;
+  background: var(--surface); border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 22px 20px 26px; display: grid; gap: 18px;
+  animation: rise 0.22s ease-out;
+}
+@keyframes rise { from { transform: translateY(24px); opacity: 0; } }
+.sheet h3 { display: flex; align-items: center; gap: 10px; font-size: var(--fs-lg); font-weight: 600; color: var(--green); line-height: 1.3; }
+.sheet fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.sheet legend { font-weight: 600; margin-block-end: 8px; padding: 0; }
+.urg { grid-template-columns: 1fr 1fr; }
+.opt { position: relative; }
+.opt input, .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opt span {
+  display: grid; place-items: center; text-align: center; min-block-size: 64px; padding: 8px;
+  border: 2px solid var(--line); border-radius: var(--r-md); font-weight: 500;
+}
+.opt input:checked + span { border-color: var(--green); background: var(--green-soft); }
+.opt-urgent input:checked + span { border-color: var(--red); background: var(--red-soft); color: var(--red); }
+.opt input:focus-visible + span, .chip input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+.quick { display: flex !important; flex-wrap: wrap; }
+.chip { position: relative; }
+.chip span {
+  display: inline-flex; align-items: center; min-block-size: 44px; padding: 6px 14px;
+  border: 1.5px solid var(--line); border-radius: 999px; font-size: var(--fs-sm);
+}
+.chip input:checked + span { border-color: var(--green); background: var(--green-soft); color: var(--green); font-weight: 600; }
+.note-l { display: grid; gap: 6px; font-weight: 600; }
+textarea {
+  font-weight: 400; border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  padding: 10px 12px; background: var(--surface-2); resize: vertical;
+}
+.sheet-actions { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+
+.btn {
+  min-block-size: 48px; padding: 10px 18px; border-radius: var(--r-sm);
+  font-weight: 600; border: 2px solid transparent;
+}
+.btn-primary { background: var(--green); color: var(--green-ink); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; border-color: var(--line); }
+.btn-ghost:hover { border-color: var(--ink-2); }
+
+/* ---------- واجهات المشرفين ---------- */
+.sup-head {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;
+  margin-block-end: 22px;
+}
+.sup-head h1 { font-size: var(--fs-xl); font-weight: 600; line-height: 1.2; }
+.tally { display: flex; gap: 6px; margin: 0; }
+.tally div { padding: 8px 16px; border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--line); text-align: center; }
+.tally dt { font-size: var(--fs-sm); color: var(--ink-2); }
+.tally dd { margin: 0; font-size: var(--fs-lg); font-weight: 600; line-height: 1.2; }
+.tally .t-new dd { color: var(--red); }
+
+.sup-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+.tabs { display: flex; gap: 6px; margin-block-end: 14px; }
+.tab {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+  padding: 6px 16px; min-block-size: 40px; font-size: var(--fs-sm);
+}
+.tab[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.cards { display: grid; gap: 12px; }
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+  padding: 18px 20px; display: grid; gap: 10px;
+  border-inline-start: 5px solid var(--line);
+}
+.card.st-new { border-inline-start-color: var(--ink-2); }
+.card.is-urgent { border-inline-start-color: var(--red); background: linear-gradient(to left, var(--red-soft), var(--surface) 45%); }
+[dir="ltr"] .card.is-urgent { background: linear-gradient(to right, var(--red-soft), var(--surface) 45%); }
+.card.st-accepted { border-inline-start-color: var(--green); }
+.card.st-done { opacity: 0.75; }
+.card-top { display: flex; align-items: center; gap: 10px; }
+.card-top .ic { color: var(--green); }
+.card-top h3 { font-size: var(--fs-md); font-weight: 600; }
+.card-top time { margin-inline-start: auto; }
+.who { display: flex; flex-wrap: wrap; gap: 4px 12px; font-weight: 600; }
+.who span { font-weight: 400; color: var(--ink-2); }
+.where, .r-meta { display: flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: var(--fs-sm); }
+.q-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.q-list li { background: var(--surface-2); border: 1px solid var(--line); padding: 2px 12px; border-radius: 999px; font-size: var(--fs-sm); }
+.note-ar { font-size: var(--fs-base); }
+.mt { font-size: 0.75rem; color: var(--gold); margin-inline-start: 8px; }
+.note-pending { font-size: var(--fs-sm); color: var(--ink-2); }
+
+/* جسر اللغة: العنصر المميِّز للمنصة */
+.bridge {
+  background: var(--gold-soft); border-radius: var(--r-sm);
+  padding: 10px 14px; border-inline-start: 3px solid var(--gold);
+}
+.bridge-tag { display: flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--gold); font-weight: 600; }
+.bridge-text { font-size: var(--fs-sm); color: var(--ink); margin-block-start: 4px; }
+.bridge-text p + p { opacity: 0.85; }
+
+.act { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-block-start: 10px; border-block-start: 1px solid var(--line); }
+.act label { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--ink-2); }
+.assigned { color: var(--green); font-weight: 500; font-size: var(--fs-sm); }
+.done-line { color: var(--ink-2); padding-block-start: 10px; border-block-start: 1px solid var(--line); }
+
+.roster { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px; position: sticky; inset-block-start: 16px; }
+.roster h2 { font-size: var(--fs-md); font-weight: 600; margin-block-end: 10px; }
+.roster li { padding-block: 12px; border-block-start: 1px solid var(--line); display: grid; gap: 2px; }
+.r-name { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+.r-open { font-size: 0.75rem; color: var(--red); background: var(--red-soft); padding: 1px 8px; border-radius: 999px; font-weight: 500; align-self: center; }
+
+/* المشرف العام */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 20px; }
+.kpis div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; }
+.kpis dt { font-size: var(--fs-sm); color: var(--ink-2); }
+.kpis dd { margin: 4px 0 0; font-size: var(--fs-xl); font-weight: 600; line-height: 1.1; }
+.kpis dd small { font-size: var(--fs-sm); font-weight: 400; color: var(--ink-2); }
+.kpis .k-alert { border-color: var(--red); background: var(--red-soft); }
+.kpis .k-alert dd { color: var(--red); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; margin-block-end: 16px; }
+.panel h2 { font-size: var(--fs-md); font-weight: 600; margin-block-end: 12px; }
+.panel-alert { border-color: var(--red); }
+.g-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.g-grid .panel { margin: 0; }
+.g-grid { margin-block-end: 16px; }
+
+.esc li { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; padding-block: 12px; border-block-start: 1px solid var(--line); }
+.esc li:first-child { border-block-start: 0; padding-block-start: 0; }
+.esc-main { font-weight: 600; display: flex; gap: 6px; flex-wrap: wrap; }
+
+.bars { display: grid; gap: 10px; }
+.bars li { display: grid; grid-template-columns: 9.5rem 1fr 2rem; align-items: center; gap: 10px; font-size: var(--fs-sm); }
+.b-track { display: flex; block-size: 12px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.b-fill { display: block; block-size: 100%; background: var(--green); border-radius: 999px; }
+.b-val { font-weight: 600; text-align: end; }
+
+.table-wrap { overflow-x: auto; }
+table { inline-size: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+th, td { text-align: start; padding: 10px 12px; border-block-end: 1px solid var(--line); white-space: nowrap; }
+thead th { color: var(--ink-2); font-weight: 500; }
+tbody th { font-weight: 600; }
+.cell-alert { color: var(--red); font-weight: 700; }
+
+.langs { display: flex; flex-wrap: wrap; gap: 8px; }
+.langs li { display: flex; gap: 10px; align-items: center; padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; }
+.langs b { color: var(--green); }
+
+/* ---------- التنبيه والتذييل ---------- */
+#toast {
+  position: fixed; inset-block-end: 20px; inset-inline: 16px; margin-inline: auto; max-inline-size: 440px;
+  background: var(--ink); color: var(--bg); padding: 14px 18px; border-radius: var(--r-sm);
+  z-index: 40; transform: translateY(140%); visibility: hidden; transition: transform 0.25s ease, visibility 0.25s; font-weight: 500;
+}
+#toast.show { transform: none; visibility: visible; }
+.foot { padding-block: 10px 30px; color: var(--ink-2); font-size: var(--fs-sm); }
+
+/* ---------- الاستجابة للشاشات ---------- */
+@media (max-width: 900px) {
+  .sup-grid { grid-template-columns: 1fr; }
+  .roster { position: static; }
+  .kpis { grid-template-columns: 1fr 1fr; }
+  .g-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .shell { padding-inline: 12px; }
+  .top-inner { padding-inline: 12px; }
+  .roles { inline-size: 100%; }
+  .role { flex: 1; justify-content: center; padding-inline: 6px; gap: 5px; }
+  .dot { min-inline-size: 19px; block-size: 19px; padding-inline: 4px; }
+  .phone { border: 0; border-radius: var(--r-md); padding-inline: 14px; }
+  .sup-head h1 { font-size: var(--fs-lg); }
+  .tally { inline-size: 100%; }
+  .tally div { flex: 1; }
+  .esc li { grid-template-columns: 1fr auto; }
+  .esc li .btn { grid-column: 1 / -1; }
+  .bars li { grid-template-columns: 7rem 1fr 1.5rem; }
+  .card { padding: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="#" aria-label="حج بلا عوائق">
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M8 34V18a12 12 0 0 1 24 0v16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M4 34c8-1 12-6 16-12s9-9 16-9" fill="none" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <span>حج بلا عوائق</span>
+      </a>
+      <nav class="roles" aria-label="الواجهات الثلاث" id="roles"></nav>
+    </div>
+  </header>
+
+  <main id="view" class="shell" tabindex="-1"></main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="foot shell">
+    <p>نموذج أولي تفاعلي. البيانات تجريبية وتعود لحالتها الأولى عند تحديث الصفحة.</p>
+  </footer>
+
+  <script>
+/* حج بلا عوائق — ملف اللغات
+   لإضافة لغة جديدة: أضفها في LANGS ثم أضف ترجمتها لكل مفتاح أدناه.
+   أي مفتاح بلا ترجمة يظهر بالعربية تلقائياً. */
+
+const LANGS = {
+  ar: { name: 'العربية', dir: 'rtl' },
+  en: { name: 'English', dir: 'ltr' },
+  ur: { name: 'اردو', dir: 'rtl' },
+  id: { name: 'Bahasa Indonesia', dir: 'ltr' },
+  tr: { name: 'Türkçe', dir: 'ltr' },
+  fr: { name: 'Français', dir: 'ltr' }
+};
+
+/* أسماء اللغات كما تظهر للمشرفين */
+const LANG_AR = {
+  ar: 'العربية', en: 'الإنجليزية', ur: 'الأردية',
+  id: 'الإندونيسية', tr: 'التركية', fr: 'الفرنسية'
+};
+
+const STR = {
+  hello: { ar: 'السلام عليكم، {name}', en: 'Assalamu alaikum, {name}', ur: 'السلام علیکم، {name}', id: 'Assalamualaikum, {name}', tr: 'Selamün aleyküm, {name}', fr: 'Assalamou alaykoum, {name}' },
+  campaignLabel: { ar: 'حملتك', en: 'Your group', ur: 'آپ کا قافلہ', id: 'Rombongan Anda', tr: 'Kafileniz', fr: 'Votre groupe' },
+  locationLabel: { ar: 'أنت الآن في', en: 'You are at', ur: 'آپ اس وقت یہاں ہیں', id: 'Lokasi Anda', tr: 'Şu an buradasınız', fr: 'Vous êtes à' },
+  ask: { ar: 'بماذا نساعدك الآن؟', en: 'What do you need right now?', ur: 'آپ کو ابھی کیا چاہیے؟', id: 'Apa yang Anda butuhkan sekarang?', tr: 'Şu anda neye ihtiyacınız var?', fr: 'De quoi avez-vous besoin ?' },
+  askHint: { ar: 'يصل طلبك إلى مشرف حملتك فوراً.', en: 'Your request reaches your group supervisor instantly, in Arabic.', ur: 'آپ کی درخواست فوراً عربی میں آپ کے نگران تک پہنچتی ہے۔', id: 'Permintaan Anda langsung sampai ke pembimbing rombongan dalam bahasa Arab.', tr: 'Talebiniz kafile sorumlunuza anında Arapça olarak ulaşır.', fr: 'Votre demande parvient aussitôt à votre superviseur, en arabe.' },
+  emergency: { ar: 'طوارئ', en: 'Emergency', ur: 'ہنگامی حالت', id: 'Darurat', tr: 'Acil durum', fr: 'Urgence' },
+  emergencySub: { ar: 'اتصال بالإسعاف 997 وإبلاغ مشرفك', en: 'Call ambulance 997 and alert your supervisor', ur: 'ایمبولینس 997 کو کال اور نگران کو اطلاع', id: 'Telepon ambulans 997 dan beri tahu pembimbing', tr: 'Ambulansı (997) ara ve sorumluyu bilgilendir', fr: 'Appeler le 997 et prévenir le superviseur' },
+  urgency: { ar: 'هل الأمر عاجل؟', en: 'Is it urgent?', ur: 'کیا یہ فوری ہے؟', id: 'Apakah mendesak?', tr: 'Acil mi?', fr: 'Est-ce urgent ?' },
+  normal: { ar: 'أستطيع الانتظار قليلاً', en: 'I can wait a little', ur: 'میں تھوڑا انتظار کر سکتا ہوں', id: 'Saya bisa menunggu sebentar', tr: 'Biraz bekleyebilirim', fr: 'Je peux attendre un peu' },
+  urgent: { ar: 'عاجل', en: 'Urgent', ur: 'فوری', id: 'Mendesak', tr: 'Acil', fr: 'Urgent' },
+  quickLabel: { ar: 'أضف تفصيلاً بلمسة', en: 'Add a detail with one tap', ur: 'ایک ٹیپ میں تفصیل شامل کریں', id: 'Tambahkan detail dengan satu ketukan', tr: 'Tek dokunuşla ayrıntı ekleyin', fr: 'Ajouter un détail en un geste' },
+  note: { ar: 'ملاحظة بكلماتك (اختياري)', en: 'Note in your own words (optional)', ur: 'اپنے الفاظ میں نوٹ (اختیاری)', id: 'Catatan dengan kata-kata Anda (opsional)', tr: 'Kendi sözlerinizle not (isteğe bağlı)', fr: 'Note avec vos mots (facultatif)' },
+  notePh: { ar: 'مثال: أنا عند البوابة 7', en: 'e.g. I am at gate 7', ur: 'مثال: میں گیٹ 7 پر ہوں', id: 'mis. Saya di gerbang 7', tr: 'örn. 7 numaralı kapıdayım', fr: 'ex. Je suis à la porte 7' },
+  send: { ar: 'أرسل الطلب', en: 'Send request', ur: 'درخواست بھیجیں', id: 'Kirim permintaan', tr: 'Talebi gönder', fr: 'Envoyer la demande' },
+  cancel: { ar: 'إلغاء', en: 'Cancel', ur: 'منسوخ کریں', id: 'Batal', tr: 'Vazgeç', fr: 'Annuler' },
+  sent: { ar: 'أُرسل طلبك. سيتواصل معك مشرف حملتك.', en: 'Request sent. Your supervisor will respond.', ur: 'درخواست بھیج دی گئی۔ آپ کا نگران رابطہ کرے گا۔', id: 'Permintaan terkirim. Pembimbing akan merespons.', tr: 'Talep gönderildi. Sorumlunuz size dönecek.', fr: 'Demande envoyée. Votre superviseur va répondre.' },
+  sosSent: { ar: 'أُبلغ مشرفك بحالة طارئة.', en: 'Your supervisor has been alerted.', ur: 'آپ کے نگران کو اطلاع دے دی گئی۔', id: 'Pembimbing Anda sudah diberi tahu.', tr: 'Sorumlunuz bilgilendirildi.', fr: 'Votre superviseur a été prévenu.' },
+  myRequests: { ar: 'طلباتي', en: 'My requests', ur: 'میری درخواستیں', id: 'Permintaan saya', tr: 'Taleplerim', fr: 'Mes demandes' },
+  empty: { ar: 'لا طلبات بعد. اختر من الأعلى متى احتجت.', en: 'No requests yet. Choose above whenever you need help.', ur: 'ابھی کوئی درخواست نہیں۔ ضرورت ہو تو اوپر سے منتخب کریں۔', id: 'Belum ada permintaan. Pilih di atas saat Anda butuh bantuan.', tr: 'Henüz talep yok. İhtiyacınız olduğunda yukarıdan seçin.', fr: 'Aucune demande. Choisissez ci-dessus en cas de besoin.' },
+  st_new: { ar: 'بانتظار المشرف', en: 'Waiting for supervisor', ur: 'نگران کا انتظار', id: 'Menunggu pembimbing', tr: 'Sorumlu bekleniyor', fr: 'En attente du superviseur' },
+  st_accepted: { ar: '{helper} في الطريق إليك', en: '{helper} is on the way', ur: '{helper} آپ کی طرف آ رہے ہیں', id: '{helper} sedang menuju Anda', tr: '{helper} yolda', fr: '{helper} arrive' },
+  st_done: { ar: 'تمت المساعدة', en: 'Help completed', ur: 'مدد مکمل ہو گئی', id: 'Bantuan selesai', tr: 'Yardım tamamlandı', fr: 'Aide terminée' },
+  minAgo: { ar: 'قبل {n} د', en: '{n} min ago', ur: '{n} منٹ پہلے', id: '{n} menit lalu', tr: '{n} dk önce', fr: 'il y a {n} min' },
+  justNow: { ar: 'الآن', en: 'just now', ur: 'ابھی', id: 'baru saja', tr: 'şimdi', fr: 'à l’instant' },
+  language: { ar: 'اللغة', en: 'Language', ur: 'زبان', id: 'Bahasa', tr: 'Dil', fr: 'Langue' },
+  mobility_wheelchair: { ar: 'مستخدم كرسي متحرك', en: 'Wheelchair user', ur: 'وہیل چیئر استعمال کرتے ہیں', id: 'Pengguna kursi roda', tr: 'Tekerlekli sandalye kullanıcısı', fr: 'En fauteuil roulant' },
+  mobility_cane: { ar: 'يستخدم عكازاً', en: 'Uses a cane', ur: 'چھڑی استعمال کرتے ہیں', id: 'Menggunakan tongkat', tr: 'Baston kullanıyor', fr: 'Utilise une canne' },
+  mobility_limited: { ar: 'مشي محدود', en: 'Limited walking', ur: 'محدود چلنا پھرنا', id: 'Kemampuan berjalan terbatas', tr: 'Sınırlı yürüme', fr: 'Marche limitée' }
+};
+
+/* أنواع الطلبات — مُعرّفة مسبقاً حتى تصل للمشرف بترجمة دقيقة دون أخطاء */
+const REQUEST_TYPES = {
+  wheelchair: { icon: 'wheelchair', label: { ar: 'دفع كرسي متحرك', en: 'Wheelchair pushing', ur: 'وہیل چیئر چلانے میں مدد', id: 'Bantuan mendorong kursi roda', tr: 'Tekerlekli sandalye itme', fr: 'Pousser le fauteuil' } },
+  transport: { icon: 'cart', label: { ar: 'عربة نقل', en: 'Transport cart', ur: 'سواری کی ضرورت', id: 'Kendaraan pengantar', tr: 'Taşıma aracı', fr: 'Véhicule de transport' } },
+  rest: { icon: 'bench', label: { ar: 'مكان للجلوس والراحة', en: 'A place to sit and rest', ur: 'بیٹھنے اور آرام کی جگہ', id: 'Tempat duduk dan istirahat', tr: 'Oturup dinlenecek yer', fr: 'Un endroit pour s’asseoir' } },
+  toilet: { icon: 'door', label: { ar: 'دورة مياه مهيأة', en: 'Accessible toilet', ur: 'قابل رسائی بیت الخلاء', id: 'Toilet ramah disabilitas', tr: 'Engelli tuvaleti', fr: 'Toilettes accessibles' } },
+  water: { icon: 'drop', label: { ar: 'ماء أو طعام', en: 'Water or food', ur: 'پانی یا کھانا', id: 'Air atau makanan', tr: 'Su veya yiyecek', fr: 'Eau ou nourriture' } },
+  lost: { icon: 'compass', label: { ar: 'تائه وأحتاج إرشاداً', en: 'I’m lost, I need directions', ur: 'میں راستہ بھول گیا ہوں', id: 'Saya tersesat', tr: 'Kayboldum, yol tarifi lazım', fr: 'Je suis perdu' } },
+  medical: { icon: 'cross', label: { ar: 'مساعدة طبية', en: 'Medical help', ur: 'طبی مدد', id: 'Bantuan medis', tr: 'Tıbbi yardım', fr: 'Aide médicale' } }
+};
+
+/* تفاصيل جاهزة بلمسة — تُترجم ترجمة مضمونة */
+const QUICK_NOTES = {
+  q1: { ar: 'معي مرافق', en: 'I have a companion with me', ur: 'میرے ساتھ ایک ساتھی ہے', id: 'Saya bersama pendamping', tr: 'Yanımda refakatçi var', fr: 'Je suis accompagné' },
+  q2: { ar: 'لا أستطيع الوقوف طويلاً', en: 'I cannot stand for long', ur: 'میں زیادہ دیر کھڑا نہیں ہو سکتا', id: 'Saya tidak kuat berdiri lama', tr: 'Uzun süre ayakta duramam', fr: 'Je ne peux pas rester debout longtemps' },
+  q3: { ar: 'بطارية هاتفي على وشك النفاد', en: 'My phone battery is almost empty', ur: 'میرے فون کی بیٹری ختم ہونے والی ہے', id: 'Baterai ponsel saya hampir habis', tr: 'Telefonumun şarjı bitmek üzere', fr: 'Ma batterie est presque vide' },
+  q4: { ar: 'المكان مزدحم جداً', en: 'It is very crowded here', ur: 'یہاں بہت رش ہے', id: 'Di sini sangat padat', tr: 'Burası çok kalabalık', fr: 'Il y a beaucoup de monde ici' }
+};
+
+const STAGES = {
+  mina: { ar: 'منى', en: 'Mina', ur: 'منیٰ', id: 'Mina', tr: 'Mina', fr: 'Mina' },
+  arafat: { ar: 'عرفات', en: 'Arafat', ur: 'عرفات', id: 'Arafah', tr: 'Arafat', fr: 'Arafat' },
+  muzdalifah: { ar: 'مزدلفة', en: 'Muzdalifah', ur: 'مزدلفہ', id: 'Muzdalifah', tr: 'Müzdelife', fr: 'Muzdalifa' },
+  jamarat: { ar: 'الجمرات', en: 'Jamarat', ur: 'جمرات', id: 'Jamarat', tr: 'Cemerat', fr: 'Jamarat' },
+  haram: { ar: 'المسجد الحرام', en: 'Masjid al-Haram', ur: 'مسجد الحرام', id: 'Masjidil Haram', tr: 'Mescid-i Haram', fr: 'Masjid al-Haram' }
+};
+
+</script>
+  <script>
+/* حج بلا عوائق — بيانات تجريبية
+   في النسخة الفعلية تأتي هذه البيانات من الخادم (API) بدلاً من هذا الملف. */
+
+const CAMPAIGNS = [
+  { id: 'c1', name: 'حملة الرضوان', latin: 'Al-Ridwan', supervisor: 'فهد العتيبي',
+    helpers: [ { ar: 'سعد القحطاني', latin: 'Saad Al-Qahtani' }, { ar: 'نورة الدوسري', latin: 'Noura Al-Dosari' }, { ar: 'ماجد الحربي', latin: 'Majed Al-Harbi' } ] },
+  { id: 'c2', name: 'حملة النور', latin: 'Al-Noor', supervisor: 'سارة الغامدي',
+    helpers: [ { ar: 'ريم الزهراني', latin: 'Reem Al-Zahrani' }, { ar: 'خالد المطيري', latin: 'Khalid Al-Mutairi' } ] },
+  { id: 'c3', name: 'حملة اليسر', latin: 'Al-Yusr', supervisor: 'ناصر الشمري',
+    helpers: [ { ar: 'تركي العنزي', latin: 'Turki Al-Anazi' }, { ar: 'هند السبيعي', latin: 'Hind Al-Subaie' } ] }
+];
+
+const PILGRIMS = [
+  { id: 'p1', name: 'Siti Aminah', first: 'Siti', lang: 'id', campaign: 'c1', mobility: 'wheelchair', stage: 'mina', spot: 'مخيم ب-14' },
+  { id: 'p2', name: 'محمد اقبال', first: 'محمد', lang: 'ur', campaign: 'c1', mobility: 'cane', stage: 'mina', spot: 'مخيم ب-16' },
+  { id: 'p3', name: 'Mehmet Yılmaz', first: 'Mehmet', lang: 'tr', campaign: 'c2', mobility: 'limited', stage: 'jamarat', spot: 'الدور الثاني، المدخل الشرقي' },
+  { id: 'p4', name: 'Fatou Diallo', first: 'Fatou', lang: 'fr', campaign: 'c2', mobility: 'wheelchair', stage: 'haram', spot: 'الساحة الشمالية' },
+  { id: 'p5', name: 'عبدالله الشهري', first: 'عبدالله', lang: 'ar', campaign: 'c3', mobility: 'limited', stage: 'arafat', spot: 'قرب مسجد نمرة' },
+  { id: 'p6', name: 'Yusuf Ahmed', first: 'Yusuf', lang: 'en', campaign: 'c3', mobility: 'wheelchair', stage: 'mina', spot: 'مخيم د-3' }
+];
+
+function seedRequests(now) {
+  const m = n => now - n * 60000;
+  return [
+    { id: 'r1', pilgrimId: 'p2', type: 'rest', urgent: false, quick: ['q2'], note: '', noteAr: null, stage: 'mina', spot: 'مخيم ب-16', createdAt: m(6), status: 'new' },
+    { id: 'r2', pilgrimId: 'p4', type: 'wheelchair', urgent: true, quick: ['q4'], note: 'Je suis devant la porte 79', noteAr: 'أنا أمام الباب 79', stage: 'haram', spot: 'الساحة الشمالية', createdAt: m(5), status: 'new' },
+    { id: 'r3', pilgrimId: 'p1', type: 'toilet', urgent: true, quick: [], note: '', noteAr: null, stage: 'mina', spot: 'مخيم ب-14', createdAt: m(1), status: 'new' },
+    { id: 'r4', pilgrimId: 'p3', type: 'transport', urgent: false, quick: ['q1'], note: '', noteAr: null, stage: 'jamarat', spot: 'الدور الثاني، المدخل الشرقي', createdAt: m(18), acceptedAt: m(14), status: 'accepted', helper: 1 },
+    { id: 'r5', pilgrimId: 'p6', type: 'water', urgent: false, quick: [], note: '', noteAr: null, stage: 'mina', spot: 'مخيم د-3', createdAt: m(40), acceptedAt: m(36), doneAt: m(25), status: 'done', helper: 0 },
+    { id: 'r6', pilgrimId: 'p5', type: 'lost', urgent: false, quick: ['q3'], note: 'أنا قرب اللوحة الإرشادية رقم 3', noteAr: null, stage: 'arafat', spot: 'قرب مسجد نمرة', createdAt: m(9), acceptedAt: m(7), status: 'accepted', helper: 1 },
+    { id: 'r7', pilgrimId: 'p1', type: 'wheelchair', urgent: false, quick: ['q1'], note: '', noteAr: null, stage: 'mina', spot: 'مخيم ب-14', createdAt: m(55), acceptedAt: m(50), doneAt: m(30), status: 'done', helper: 0 }
+  ];
+}
+
+</script>
+  <script>
+/* حج بلا عوائق — منطق الواجهات الثلاث
+   الحالة كلها في الذاكرة (state). عند ربط خادم فعلي، استبدل دوال التعديل
+   (sendRequest / acceptRequest / completeRequest) باستدعاءات API. */
+(function () {
+  'use strict';
+
+  const state = {
+    role: 'pilgrim',
+    pilgrimId: 'p1',
+    campaignId: 'c1',
+    filter: 'open',
+    sheet: null,
+    requests: seedRequests(Date.now()),
+    seq: 100
+  };
+
+  /* ---------- أدوات ---------- */
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const t = (lang, key, vars = {}) => {
+    let s = (STR[key] && (STR[key][lang] || STR[key].ar)) || key;
+    for (const k in vars) s = s.replace('{' + k + '}', vars[k]);
+    return s;
+  };
+  const pilgrim = id => PILGRIMS.find(p => p.id === id);
+  const campaign = id => CAMPAIGNS.find(c => c.id === id);
+  const campaignOf = r => campaign(pilgrim(r.pilgrimId).campaign);
+  const typeLabel = (type, lang) => REQUEST_TYPES[type].label[lang] || REQUEST_TYPES[type].label.ar;
+  const stageLabel = (st, lang) => STAGES[st][lang] || STAGES[st].ar;
+  const quickLabel = (q, lang) => QUICK_NOTES[q][lang] || QUICK_NOTES[q].ar;
+  const helperName = (r, lang) => {
+    const h = campaignOf(r).helpers[r.helper];
+    if (!h) return '';
+    return (lang === 'ar' || lang === 'ur') ? h.ar : h.latin;
+  };
+  const mins = ts => Math.max(0, Math.floor((Date.now() - ts) / 60000));
+  const ageText = (ts, lang) => mins(ts) < 1 ? t(lang, 'justNow') : t(lang, 'minAgo', { n: mins(ts) });
+  const timeTag = (ts, lang) => `<time data-ts="${ts}" data-lang="${lang}">${esc(ageText(ts, lang))}</time>`;
+  const isOpen = r => r.status === 'new' || r.status === 'accepted';
+  const mobAr = m => t('ar', 'mobility_' + m);
+
+  const ICONS = {
+    wheelchair: '<circle cx="11" cy="4" r="1.7"/><path d="M11 7.5v5.5h5l2.2 5.5"/><path d="M11 10h4.5"/><path d="M8 11a5.3 5.3 0 1 0 7.3 7"/>',
+    cart: '<rect x="2.5" y="7" width="13" height="8" rx="2"/><path d="M15.5 10h3l2.5 3.2V15h-5.5"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+    bench: '<path d="M4 10.5h16M5.5 10.5V7h13v3.5M4 14.5h16M6 14.5v5M18 14.5v5"/>',
+    door: '<path d="M6 21V4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21"/><path d="M3.5 21h17"/><circle cx="14.5" cy="12.5" r=".9" fill="currentColor"/>',
+    drop: '<path d="M12 3c3.6 4.4 6 7.5 6 10.6a6 6 0 0 1-12 0C6 10.5 8.4 7.4 12 3z"/>',
+    compass: '<circle cx="12" cy="12" r="8.6"/><path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z"/>',
+    cross: '<rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M12 8v8M8 12h8"/>',
+    pin: '<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+    phone: '<path d="M5.5 3.5h3.3l1.9 4.8-2.4 1.5a11 11 0 0 0 5.9 5.9l1.5-2.4 4.8 1.9v3.3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 3.5 5.5a2 2 0 0 1 2-2z"/>',
+    globe: '<circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.4 2.5 3.6 5.4 3.6 8.6s-1.2 6.1-3.6 8.6c-2.4-2.5-3.6-5.4-3.6-8.6S9.6 5.9 12 3.4z"/>'
+  };
+  const icon = (name, cls = 'ic') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
+  const mobIcon = m => icon(m === 'wheelchair' ? 'wheelchair' : 'pin');
+
+  /* ---------- شريط الأدوار ---------- */
+  const ROLES = [
+    ['pilgrim', 'واجهة الحاج'],
+    ['campaign', 'مشرف الحملة'],
+    ['general', 'المشرف العام']
+  ];
+  function renderRoles() {
+    const openNew = state.requests.filter(r => r.status === 'new').length;
+    $('#roles').innerHTML = ROLES.map(([k, label]) => `
+      <button class="role" data-action="role" data-role="${k}" aria-pressed="${state.role === k}">
+        ${label}${k === 'campaign' && openNew ? `<span class="dot" aria-label="${openNew} طلبات جديدة">${openNew}</span>` : ''}
+      </button>`).join('');
+  }
+
+  /* ---------- واجهة الحاج ---------- */
+  function viewPilgrim() {
+    const p = pilgrim(state.pilgrimId);
+    const L = p.lang, dir = LANGS[L].dir, c = campaign(p.campaign);
+    const mine = state.requests.filter(r => r.pilgrimId === p.id).sort((a, b) => b.createdAt - a.createdAt);
+
+    return `
+    <div class="demo-bar">
+      <label>تجربة بصفة الحاج
+        <select data-action="pick-pilgrim">
+          ${PILGRIMS.map(x => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${esc(x.name)} (${LANG_AR[x.lang]})</option>`).join('')}
+        </select>
+      </label>
+      <p>أرسل طلباً من هنا، ثم افتح «مشرف الحملة» لترى كيف يصل إليه بالعربية.</p>
+    </div>
+
+    <section class="phone" dir="${dir}" lang="${L}" aria-label="واجهة الحاج">
+      <header class="p-head">
+        <div>
+          <p class="p-hello">${esc(t(L, 'hello', { name: p.first }))}</p>
+          <p class="p-camp">${t(L, 'campaignLabel')}: <bdi>${esc((L === 'ar' || L === 'ur') ? c.name : c.latin)}</bdi></p>
+        </div>
+        <label class="lang-pick">
+          ${icon('globe')}
+          <span class="sr">${t(L, 'language')}</span>
+          <select data-action="pick-lang">
+            ${Object.entries(LANGS).map(([k, v]) => `<option value="${k}" lang="${k}" ${k === L ? 'selected' : ''}>${v.name}</option>`).join('')}
+          </select>
+        </label>
+      </header>
+
+      <div class="p-facts">
+        <span class="fact">${mobIcon(p.mobility)}${t(L, 'mobility_' + p.mobility)}</span>
+        <label class="fact fact-loc">${icon('pin')}<span>${t(L, 'locationLabel')}</span>
+          <select data-action="pick-stage">
+            ${Object.keys(STAGES).map(s => `<option value="${s}" ${s === p.stage ? 'selected' : ''}>${stageLabel(s, L)}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+
+      <a class="sos" href="tel:997" data-action="sos">
+        ${icon('phone', 'ic ic-lg')}
+        <span><strong>${t(L, 'emergency')}</strong><small>${t(L, 'emergencySub')}</small></span>
+      </a>
+
+      <h2 class="p-ask">${t(L, 'ask')}</h2>
+      <p class="p-hint">${t(L, 'askHint')}</p>
+
+      <div class="req-grid">
+        ${Object.keys(REQUEST_TYPES).map(k => `
+          <button class="req-btn" data-action="open-sheet" data-type="${k}">
+            ${icon(REQUEST_TYPES[k].icon, 'ic ic-xl')}<span>${typeLabel(k, L)}</span>
+          </button>`).join('')}
+      </div>
+
+      <h3 class="p-sub">${t(L, 'myRequests')}</h3>
+      ${mine.length ? `<ul class="mine">${mine.map(r => mineItem(r, L)).join('')}</ul>` : `<p class="empty">${t(L, 'empty')}</p>`}
+    </section>
+
+    ${state.sheet ? sheet(p, L, dir) : ''}`;
+  }
+
+  function mineItem(r, L) {
+    const status = r.status === 'accepted'
+      ? t(L, 'st_accepted', { helper: `<bdi>${esc(helperName(r, L))}</bdi>` })
+      : t(L, 'st_' + r.status);
+    return `
+      <li class="mine-item st-${r.status}">
+        ${icon(REQUEST_TYPES[r.type].icon, 'ic ic-lg')}
+        <div>
+          <p class="mine-type">${typeLabel(r.type, L)}${r.urgent ? ` <span class="tag-urgent">${t(L, 'urgent')}</span>` : ''}</p>
+          <p class="mine-status"><span class="status-dot"></span>${status}</p>
+        </div>
+        ${timeTag(r.createdAt, L)}
+      </li>`;
+  }
+
+  function sheet(p, L, dir) {
+    const type = state.sheet;
+    return `
+    <div class="sheet-back" data-action="close-sheet"></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" dir="${dir}" lang="${L}">
+      <h3 id="sheet-title">${icon(REQUEST_TYPES[type].icon, 'ic ic-lg')}${typeLabel(type, L)}</h3>
+
+      <fieldset class="urg">
+        <legend>${t(L, 'urgency')}</legend>
+        <label class="opt"><input type="radio" name="urg" value="0" checked><span>${t(L, 'normal')}</span></label>
+        <label class="opt opt-urgent"><input type="radio" name="urg" value="1"><span>${t(L, 'urgent')}</span></label>
+      </fieldset>
+
+      <fieldset class="quick">
+        <legend>${t(L, 'quickLabel')}</legend>
+        ${Object.keys(QUICK_NOTES).map(q => `<label class="chip"><input type="checkbox" name="quick" value="${q}"><span>${quickLabel(q, L)}</span></label>`).join('')}
+      </fieldset>
+
+      <label class="note-l">${t(L, 'note')}
+        <textarea id="note" rows="2" placeholder="${esc(t(L, 'notePh'))}"></textarea>
+      </label>
+
+      <div class="sheet-actions">
+        <button class="btn btn-primary" data-action="send">${t(L, 'send')}</button>
+        <button class="btn btn-ghost" data-action="close-sheet">${t(L, 'cancel')}</button>
+      </div>
+    </div>`;
+  }
+
+  /* ---------- واجهة مشرف الحملة ---------- */
+  function viewCampaign() {
+    const c = campaign(state.campaignId);
+    const pilgrims = PILGRIMS.filter(p => p.campaign === c.id);
+    const reqs = state.requests.filter(r => campaignOf(r).id === c.id);
+    const n = s => reqs.filter(r => r.status === s).length;
+    const order = { new: 0, accepted: 1, done: 2 };
+    const list = reqs
+      .filter(r => state.filter === 'all' || (state.filter === 'open' ? isOpen(r) : r.status === 'done'))
+      .sort((a, b) => order[a.status] - order[b.status]
+        || (a.status === 'new' ? (b.urgent - a.urgent) || (a.createdAt - b.createdAt) : 0)
+        || (a.status === 'done' ? b.doneAt - a.doneAt : a.createdAt - b.createdAt));
+
+    const tab = (k, label) => `<button class="tab" data-action="filter" data-filter="${k}" aria-pressed="${state.filter === k}">${label}</button>`;
+
+    return `
+    <div class="demo-bar">
+      <label>تجربة بصفة مشرف
+        <select data-action="pick-campaign">
+          ${CAMPAIGNS.map(x => `<option value="${x.id}" ${x.id === c.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}
+        </select>
+      </label>
+    </div>
+
+    <div class="sup-head">
+      <div>
+        <h1>${esc(c.name)}</h1>
+        <p class="muted">المشرف: ${esc(c.supervisor)}. المساعدون: ${c.helpers.length}. الحجاج المسجلون: ${pilgrims.length}.</p>
+      </div>
+      <dl class="tally">
+        <div class="t-new"><dt>جديدة</dt><dd>${n('new')}</dd></div>
+        <div><dt>قيد التنفيذ</dt><dd>${n('accepted')}</dd></div>
+        <div><dt>منجزة</dt><dd>${n('done')}</dd></div>
+      </dl>
+    </div>
+
+    <div class="sup-grid">
+      <section aria-label="الطلبات">
+        <div class="tabs">${tab('open', 'المفتوحة')}${tab('done', 'المنجزة')}${tab('all', 'الكل')}</div>
+        ${list.length ? `<ul class="cards">${list.map(r => reqCard(r, c)).join('')}</ul>`
+          : `<p class="empty">${state.filter === 'done' ? 'لم يُنجز أي طلب بعد.' : 'لا طلبات مفتوحة. ستظهر هنا فور إرسالها من الحجاج.'}</p>`}
+      </section>
+
+      <aside class="roster" aria-label="حجاج الحملة">
+        <h2>حجاج الحملة</h2>
+        <ul>
+          ${pilgrims.map(p => {
+            const open = reqs.filter(r => r.pilgrimId === p.id && isOpen(r)).length;
+            return `<li>
+              <p class="r-name"><bdi>${esc(p.name)}</bdi>${open ? `<span class="r-open">${open} مفتوح</span>` : ''}</p>
+              <p class="r-meta">${mobAr(p.mobility)}، يتحدث ${LANG_AR[p.lang]}</p>
+              <p class="r-meta">${icon('pin')}${stageLabel(p.stage, 'ar')}، ${esc(p.spot)}</p>
+            </li>`;
+          }).join('')}
+        </ul>
+      </aside>
+    </div>`;
+  }
+
+  function reqCard(r, c) {
+    const p = pilgrim(r.pilgrimId), L = p.lang;
+    const foreign = L !== 'ar';
+    const quickAr = r.quick.map(q => quickLabel(q, 'ar'));
+    let noteAr = '';
+    if (r.note) {
+      if (!foreign) noteAr = `<p class="note-ar">«${esc(r.note)}»</p>`;
+      else if (r.noteAr) noteAr = `<p class="note-ar">«${esc(r.noteAr)}»<span class="mt">ترجمة آلية</span></p>`;
+      else noteAr = `<p class="note-pending">ملاحظة حرّة بلغة الحاج. تظهر ترجمتها هنا عند ربط خدمة الترجمة الآلية.</p>`;
+    }
+
+    let action = '';
+    if (r.status === 'new') {
+      action = `
+        <div class="act">
+          <label>إسناد إلى
+            <select id="h-${r.id}">${c.helpers.map((h, i) => `<option value="${i}">${esc(h.ar)}</option>`).join('')}</select>
+          </label>
+          <button class="btn btn-primary" data-action="accept" data-id="${r.id}">إسناد المساعدة</button>
+        </div>`;
+    } else if (r.status === 'accepted') {
+      action = `
+        <div class="act">
+          <p class="assigned">${esc(helperName(r, 'ar'))} في الطريق منذ ${mins(r.acceptedAt)} د</p>
+          <button class="btn btn-ghost" data-action="done" data-id="${r.id}">تسجيل الإنجاز</button>
+        </div>`;
+    } else {
+      action = `<p class="assigned done-line">أنجزه ${esc(helperName(r, 'ar'))} خلال ${Math.max(1, Math.round((r.doneAt - r.createdAt) / 60000))} دقيقة</p>`;
+    }
+
+    return `
+    <li class="card st-${r.status}${r.urgent && r.status === 'new' ? ' is-urgent' : ''}">
+      <div class="card-top">
+        ${icon(REQUEST_TYPES[r.type].icon, 'ic ic-lg')}
+        <h3>${typeLabel(r.type, 'ar')}</h3>
+        ${r.urgent ? '<span class="tag-urgent">عاجل</span>' : ''}
+        ${timeTag(r.createdAt, 'ar')}
+      </div>
+      <p class="who"><bdi>${esc(p.name)}</bdi><span>${mobAr(p.mobility)}</span></p>
+      <p class="where">${icon('pin')}${stageLabel(r.stage, 'ar')}، ${esc(r.spot)}</p>
+      ${quickAr.length ? `<ul class="q-list">${quickAr.map(q => `<li>${q}</li>`).join('')}</ul>` : ''}
+      ${noteAr}
+      ${foreign ? `
+      <div class="bridge">
+        <p class="bridge-tag">${icon('globe')}كما أرسله الحاج باللغة ${LANG_AR[L]}</p>
+        <div class="bridge-text" dir="${LANGS[L].dir}" lang="${L}">
+          <p>${typeLabel(r.type, L)}</p>
+          ${r.quick.map(q => `<p>${quickLabel(q, L)}</p>`).join('')}
+          ${r.note ? `<p>«${esc(r.note)}»</p>` : ''}
+        </div>
+      </div>` : ''}
+      ${action}
+    </li>`;
+  }
+
+  /* ---------- واجهة المشرف العام ---------- */
+  function viewGeneral() {
+    const all = state.requests;
+    const open = all.filter(isOpen);
+    const escalate = all.filter(r => r.status === 'new' && r.urgent && mins(r.createdAt) >= 3)
+      .sort((a, b) => a.createdAt - b.createdAt);
+    const responded = all.filter(r => r.acceptedAt);
+    const avg = responded.length ? (responded.reduce((s, r) => s + (r.acceptedAt - r.createdAt), 0) / responded.length / 60000) : 0;
+    const done = all.filter(r => r.status === 'done').length;
+
+    const bars = (entries, label) => {
+      const max = Math.max(1, ...entries.map(e => e[1]));
+      return `<ul class="bars">${entries.map(([k, v]) => `
+        <li><span class="b-label">${label(k)}</span>
+          <span class="b-track"><span class="b-fill" style="inline-size:${(v / max) * 100}%"></span></span>
+          <span class="b-val">${v}</span></li>`).join('')}</ul>`;
+    };
+    const byStage = Object.keys(STAGES).map(s => [s, open.filter(r => r.stage === s).length]);
+    const byType = Object.keys(REQUEST_TYPES).map(k => [k, all.filter(r => r.type === k).length]).sort((a, b) => b[1] - a[1]);
+    const langs = Object.keys(LANGS).map(l => [l, PILGRIMS.filter(p => p.lang === l).length]).filter(e => e[1]);
+
+    return `
+    <div class="sup-head">
+      <div>
+        <h1>نظرة على جميع الحملات</h1>
+        <p class="muted">الحملات: ${CAMPAIGNS.length}. الحجاج المسجلون من ذوي الإعاقة الحركية: ${PILGRIMS.length}. اللغات: ${langs.length}.</p>
+      </div>
+    </div>
+
+    <dl class="kpis">
+      <div><dt>طلبات مفتوحة</dt><dd>${open.length}</dd></div>
+      <div class="${escalate.length ? 'k-alert' : ''}"><dt>عاجلة بلا استجابة منذ 3 دقائق</dt><dd>${escalate.length}</dd></div>
+      <div><dt>متوسط زمن الاستجابة</dt><dd>${avg.toFixed(1)}<small> دقيقة</small></dd></div>
+      <div><dt>طلبات منجزة</dt><dd>${done}</dd></div>
+    </dl>
+
+    <section class="panel ${escalate.length ? 'panel-alert' : ''}" aria-label="تحتاج تدخلاً">
+      <h2>تحتاج تدخلاً الآن</h2>
+      ${escalate.length ? `<ul class="esc">${escalate.map(r => {
+        const p = pilgrim(r.pilgrimId), c = campaignOf(r);
+        return `<li>
+          <div>
+            <p class="esc-main">${typeLabel(r.type, 'ar')} <span class="muted">لـ</span><bdi>${esc(p.name)}</bdi></p>
+            <p class="muted">${esc(c.name)}، ${stageLabel(r.stage, 'ar')}، ${esc(r.spot)}</p>
+          </div>
+          ${timeTag(r.createdAt, 'ar')}
+          <button class="btn btn-primary" data-action="nudge" data-id="${r.id}">تنبيه ${esc(c.supervisor)}</button>
+        </li>`;
+      }).join('')}</ul>` : '<p class="empty">كل الطلبات العاجلة استُجيب لها.</p>'}
+    </section>
+
+    <div class="g-grid">
+      <section class="panel"><h2>الطلبات المفتوحة حسب الموقع</h2>${bars(byStage, s => stageLabel(s, 'ar'))}</section>
+      <section class="panel"><h2>أكثر الاحتياجات طلباً</h2>${bars(byType, k => typeLabel(k, 'ar'))}</section>
+    </div>
+
+    <section class="panel">
+      <h2>أداء الحملات</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">الحملة</th><th scope="col">المشرف</th><th scope="col">الحجاج</th><th scope="col">مفتوحة</th><th scope="col">عاجلة معلّقة</th><th scope="col">متوسط الاستجابة</th></tr></thead>
+          <tbody>
+          ${CAMPAIGNS.map(c => {
+            const rs = all.filter(r => campaignOf(r).id === c.id);
+            const resp = rs.filter(r => r.acceptedAt);
+            const a = resp.length ? (resp.reduce((s, r) => s + (r.acceptedAt - r.createdAt), 0) / resp.length / 60000).toFixed(1) + ' د' : 'لا بيانات';
+            const urg = rs.filter(r => r.status === 'new' && r.urgent).length;
+            return `<tr>
+              <th scope="row">${esc(c.name)}</th><td>${esc(c.supervisor)}</td>
+              <td>${PILGRIMS.filter(p => p.campaign === c.id).length}</td>
+              <td>${rs.filter(isOpen).length}</td>
+              <td class="${urg ? 'cell-alert' : ''}">${urg}</td><td>${a}</td></tr>`;
+          }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>لغات الحجاج</h2>
+      <ul class="langs">${langs.map(([l, v]) => `<li><span lang="${l}">${LANGS[l].name}</span><b>${v}</b></li>`).join('')}</ul>
+    </section>`;
+  }
+
+  /* ---------- العرض ---------- */
+  function render() {
+    renderRoles();
+    const v = $('#view');
+    v.innerHTML = state.role === 'pilgrim' ? viewPilgrim() : state.role === 'campaign' ? viewCampaign() : viewGeneral();
+    v.dataset.role = state.role;
+    if (state.sheet) {
+      const first = document.querySelector('.sheet input');
+      if (first) first.focus();
+    }
+  }
+
+  let toastTimer;
+  function toast(msg, lang = 'ar') {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.lang = lang;
+    el.dir = LANGS[lang] ? LANGS[lang].dir : 'rtl';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3800);
+  }
+
+  /* ---------- الإجراءات ---------- */
+  function sendRequest() {
+    const p = pilgrim(state.pilgrimId);
+    const urgent = (document.querySelector('input[name=urg]:checked') || {}).value === '1';
+    const quick = [...document.querySelectorAll('input[name=quick]:checked')].map(i => i.value);
+    const note = ($('#note') || {}).value?.trim() || '';
+    state.requests.push({
+      id: 'r' + (++state.seq), pilgrimId: p.id, type: state.sheet, urgent, quick,
+      note, noteAr: null, stage: p.stage, spot: p.spot, createdAt: Date.now(), status: 'new'
+    });
+    state.sheet = null;
+    render();
+    toast(t(p.lang, 'sent'), p.lang);
+  }
+
+  function acceptRequest(id) {
+    const r = state.requests.find(x => x.id === id);
+    const sel = document.getElementById('h-' + id);
+    r.helper = sel ? +sel.value : 0;
+    r.status = 'accepted';
+    r.acceptedAt = Date.now();
+    render();
+    toast(`أُسند الطلب إلى ${helperName(r, 'ar')}، وأُبلغ الحاج بلغته.`);
+  }
+
+  function completeRequest(id) {
+    const r = state.requests.find(x => x.id === id);
+    r.status = 'done';
+    r.doneAt = Date.now();
+    render();
+    toast('سُجّل الطلب منجزاً.');
+  }
+
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const a = el.dataset.action;
+    if (a === 'role') { state.role = el.dataset.role; state.sheet = null; render(); $('#view').focus({ preventScroll: true }); }
+    else if (a === 'open-sheet') { state.sheet = el.dataset.type; render(); }
+    else if (a === 'close-sheet') { state.sheet = null; render(); }
+    else if (a === 'send') sendRequest();
+    else if (a === 'accept') acceptRequest(el.dataset.id);
+    else if (a === 'done') completeRequest(el.dataset.id);
+    else if (a === 'filter') { state.filter = el.dataset.filter; render(); }
+    else if (a === 'nudge') {
+      const r = state.requests.find(x => x.id === el.dataset.id);
+      toast(`أُرسل تنبيه إلى ${campaignOf(r).supervisor} بشأن الطلب العاجل.`);
+    }
+    else if (a === 'sos') {
+      const p = pilgrim(state.pilgrimId);
+      state.requests.push({
+        id: 'r' + (++state.seq), pilgrimId: p.id, type: 'medical', urgent: true, quick: [],
+        note: '', noteAr: null, stage: p.stage, spot: p.spot, createdAt: Date.now(), status: 'new'
+      });
+      render();
+      toast(t(p.lang, 'sosSent'), p.lang);
+      /* لا نمنع الرابط: على الجوال يفتح الاتصال بـ 997 مباشرة */
+    }
+  });
+
+  document.addEventListener('change', e => {
+    const a = e.target.dataset.action;
+    if (a === 'pick-pilgrim') { state.pilgrimId = e.target.value; render(); }
+    else if (a === 'pick-lang') { pilgrim(state.pilgrimId).lang = e.target.value; render(); }
+    else if (a === 'pick-stage') { pilgrim(state.pilgrimId).stage = e.target.value; render(); }
+    else if (a === 'pick-campaign') { state.campaignId = e.target.value; render(); }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && state.sheet) { state.sheet = null; render(); }
+  });
+
+  /* تحديث الأعمار الزمنية كل 20 ثانية دون إعادة رسم الصفحة */
+  setInterval(() => {
+    document.querySelectorAll('time[data-ts]').forEach(el => {
+      el.textContent = ageText(+el.dataset.ts, el.dataset.lang);
+    });
+  }, 20000);
+
+  render();
+})();
+
+</script>
+</body>
+</html>
